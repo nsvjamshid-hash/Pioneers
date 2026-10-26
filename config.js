@@ -1,2 +1,2 @@
 // Supabase kalitlarini shu yerga yozing (README.md ga qarang). Bo‘sh qolsa ilova mehmon rejimida (faqat shu telefonda) ishlaydi.
-window.PIONEERS = { url: "", key: "" };
+window.PIONEERS = { url: "https://fabbwlelmoccxaxjaaow.supabase.co", key: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZhYmJ3bGVsbW9jY3hheGphYW93Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMwMzUwMTUsImV4cCI6MjEwODYxMTAxNX0.l4HQYPq8XHx0RnadIkwdZU0uQT-3DxtPtRRPSI0LWgQ" };
