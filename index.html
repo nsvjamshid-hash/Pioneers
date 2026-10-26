@@ -48,6 +48,7 @@ table{width:100%;border-collapse:collapse;font-size:.82rem}td,th{padding:7px 6px
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script>
+window.onerror=(m,u,l)=>{document.getElementById("app").innerHTML="<pre style=\"padding:20px;white-space:pre-wrap;color:#b4473a\">Xato: "+m+" ("+l+")</pre>"};
 const KEY="pioneers_v1",C=window.PIONEERS||{},sb=C.url&&C.key&&window.supabase?window.supabase.createClient(C.url,C.key):null,app=document.getElementById("app");
 const h=(t,a,...c)=>{const e=document.createElement(t);for(const k in a||{}){const v=a[k];if(k=="class")e.className=v;else if(k.slice(0,2)=="on")e[k]=v;else e.setAttribute(k,v)}for(const x of c.flat(9))if(x!=null&&x!==false)e.append(x.nodeType?x:String(x));return e};
 const sh=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a},pick=(a,n)=>sh(a).slice(0,n);
@@ -65,7 +66,7 @@ function rec(w,ok){const b=S.box[w.id]||0;S.box[w.id]=ok?Math.min(5,b+1):Math.ma
 /* ---------- ekranlar ---------- */
 function shell(main,tab){const tabs=[["units","Unitlar"],["review","Takrorlash"],["top","Reyting"],["me","Profil"]];if(prof&&prof.role=="admin")tabs.push(["admin","Admin"]);
  app.replaceChildren(h("header",{},h("b",{class:"serif logo"},"Pioneers"),h("span",{class:"chips"},h("i",{},S.xp+" XP"),h("i",{},S.streak+" kun"))),h("main",{},main),h("nav",{},tabs.map(([k,l])=>h("button",{class:k==tab?"on":"",onclick:()=>go(k)},l))));scrollTo(0,0)}
-const go=k=>({units,review,top,me,admin})[k]();
+const go=k=>({units,review,board,me,admin})[k]();
 function intro(){const m=h("div",{class:"mark"});m.innerHTML='<svg viewBox="0 0 512 512"><circle cx="256" cy="256" r="190" fill="none" stroke="currentColor" stroke-width="16" style="color:var(--pri)"/><path d="M256 100l50 156-50 156-50-156z" fill="#c0654a"/><circle cx="256" cy="256" r="18" fill="var(--bg)"/></svg>';
  app.replaceChildren(h("div",{class:"intro"},m,h("h1",{class:"serif"},"Pioneers"),h("p",{class:"tag"},"600 ta zarur inglizcha so‘z. 30 ta unit. Har kuni bir qadam."),h("button",{class:"btn big",onclick:()=>sb?auth():units()},"Boshlash"),h("small",{},"4000 Essential English Words · Book 1")))}
 function auth(){let reg=false;const n=h("input",{class:"in",placeholder:"Ismingiz",hidden:""}),e=h("input",{class:"in",placeholder:"Login yoki email",autocapitalize:"off"}),p=h("input",{class:"in",type:"password",placeholder:"Parol"}),m=h("div",{class:"msg"}),b=h("button",{class:"btn",onclick:go2},"Kirish"),s=h("button",{class:"link",onclick:()=>{reg=!reg;n.hidden=!reg;b.textContent=reg?"Ro‘yxatdan o‘tish":"Kirish";s.textContent=reg?"Hisobim bor":"Hisob yaratish"}},"Hisob yaratish");
@@ -80,7 +81,7 @@ const E=[[1,"Kartochkalar","So‘zni ko‘ring, o‘zingizni baholang"],[2,"So�
 function menu(u){shell([h("button",{class:"back",onclick:()=>unit(u)},"← Unit "+u.unit),h("h2",{class:"serif"},"Mashqlar"),h("div",{class:"ex-list"},E.map(e=>h("button",{class:"card",onclick:()=>start(u,e[0])},h("b",{class:"serif"},e[0]),h("span",{},e[1],h("small",{},e[2])))))],"units")}
 function review(){const due=A.filter(w=>S.due[w.id]&&S.due[w.id]<=Date.now()),bad=A.filter(w=>S.wrong[w.id]);
  shell([h("h2",{class:"serif"},"Takrorlash"),h("p",{},"Oraliq takrorlash: so‘z qanchalik qiyin bo‘lsa, shunchalik tez-tez chiqadi."),h("div",{class:"card"},h("b",{},due.length+" ta so‘z takrorlashga tayyor"),h("button",{class:"btn",onclick:()=>due.length?start(null,19,due,"Takrorlash"):alert("Hozircha takrorlash kerak emas")},"Boshlash")),h("div",{class:"card"},h("b",{},bad.length+" ta xato qilingan so‘z"),h("button",{class:"btn ghost",onclick:()=>bad.length?start(null,19,bad,"Xatolar"):alert("Hozircha xato yo‘q")},"Xatolar ustida ishlash"))],"review")}
-async function top(){shell(h("p",{},"Yuklanmoqda…"),"top");let rows=[];if(sb&&prof){const r=await sb.from("leaderboard").select("*");rows=r.data||[]}
+async function board(){shell(h("p",{},"Yuklanmoqda…"),"top");let rows=[];if(sb&&prof){const r=await sb.from("leaderboard").select("*");rows=r.data||[]}
  shell([h("h2",{class:"serif"},"Reyting"),!prof&&h("p",{},"Reytingda qatnashish uchun hisob bilan kiring."),rows.map((r,i)=>h("div",{class:"card row"},h("b",{},(i+1)+"."),h("span",{style:"flex:1"},nick(r.name)),h("b",{},r.xp+" XP")))],"top")}
 function me(){const m=mastered(A),acc=S.n?Math.round(S.c/S.n*100):0,bd=[["Birinchi qadam",S.xp>=10],["7 kunlik seriya",S.streak>=7],["100 ta so‘z",m>=100],["300 ta so‘z",m>=300],["Hammasi: 600",m>=600],["1000 XP",S.xp>=1000]];
  shell([h("h2",{class:"serif"},prof?nick(prof.name):"Mehmon"),h("div",{class:"stats"},[["Daraja",lvl()],["XP",S.xp],["O‘zlashtirilgan",m+"/600"],["Aniqlik",acc+"%"]].map(([a,b])=>h("div",{class:"card"},h("small",{},a),h("b",{class:"serif"},b)))),h("h3",{},"Nishonlar"),bd.map(([a,b])=>h("div",{class:"card",style:b?"":"opacity:.4"},(b?"✓ ":"○ ")+a)),sb&&(prof?h("button",{class:"btn ghost",onclick:async()=>{await sb.auth.signOut();location.reload()}},"Chiqish"):h("button",{class:"btn",onclick:auth},"Kirish / ro‘yxatdan o‘tish"))],"me")}
@@ -160,7 +161,7 @@ async function admin(){shell(h("p",{},"Yuklanmoqda…"),"admin");let tab="u";
 
 /* ---------- boshlash ---------- */
 (async()=>{try{navigator.serviceWorker&&navigator.serviceWorker.register("sw.js")}catch(e){}
- const d=await(await fetch("words.json")).json();U=d.map(u=>({unit:u.unit,words:u.words.map(w=>({...w,id:w.w,unit:u.unit}))}));A=U.flatMap(u=>u.words);
+ let d;try{d=await(await fetch("words.json")).json()}catch(e){throw new Error("words.json yuklanmadi")}U=d.map(u=>({unit:u.unit,words:u.words.map(w=>({...w,id:w.w,unit:u.unit}))}));A=U.flatMap(u=>u.words);
  if(sb){const r=await sb.auth.getSession();if(r.data.session)return login(r.data.session)}intro()})();
 document.addEventListener("visibilitychange",()=>{if(document.hidden&&sb&&prof)sync()});
 </script></body></html>
